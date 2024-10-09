@@ -24,26 +24,27 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     private CustomUserDetailsService userDetailsService;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
         String authorizationHeader = request.getHeader("Authorization");
-        String username = null;
+        String email = null;  // Cambiado a 'email' en lugar de 'username'
         String jwt = null;
 
         // Extraer el token JWT del encabezado Authorization
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7); // Eliminar "Bearer "
-            username = jwtUtil.extractUsername(jwt); // Extraer el nombre de usuario del token
+            email = jwtUtil.extractEmailFromSub(jwt); // Extraer el email del token usando el método actualizado
         }
 
         // Validar el token y autenticar al usuario
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username); // Cargar detalles del usuario
+        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = userDetailsService.loadUserByUsername(email); // Cargar detalles del usuario usando el email
 
             // Validar el token y configurar la autenticación
-            if (jwtUtil.validateToken(jwt, userDetails.getUsername())) {
+            if (jwtUtil.validateToken(jwt, userDetails.getUsername())) {  // Validar con el email extraído del token
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

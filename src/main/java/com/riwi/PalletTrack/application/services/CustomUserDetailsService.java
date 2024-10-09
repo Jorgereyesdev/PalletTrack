@@ -17,18 +17,23 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private UserMapper userMapper;
-
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        UserEntity userEntity = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
+        // Buscar el usuario por su email desde la base de datos
+        UserEntity userEntity = userRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                    System.out.println("Usuario no encontrado con el email: " + email);
+                    return new UsernameNotFoundException("User not found");
+                });
+
+        System.out.println("Usuario encontrado: " + userEntity.getEmail());
+
+        // Retornar los detalles del usuario para autenticación
         return new org.springframework.security.core.userdetails.User(
-                userEntity.getEmail(),
-                userEntity.getPassword(),
-                List.of(() -> userEntity.getRole().name())
+                userEntity.getEmail(),  // Utilizar el email como el nombre de usuario
+                userEntity.getPassword(),  // Contraseña
+                List.of(() -> userEntity.getRole().name())  // Roles
         );
     }
 }

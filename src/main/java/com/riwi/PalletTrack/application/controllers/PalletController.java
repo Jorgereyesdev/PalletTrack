@@ -36,14 +36,12 @@ public class PalletController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PalletResponse> createPallet(@Valid @RequestBody PalletRequest palletRequest) {
         PalletResponse createdPallet = palletService.createPallet(palletRequest);
         return ResponseEntity.status(201).body(createdPallet);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<PalletResponse> updatePallet(@PathVariable Long id, @Valid @RequestBody PalletRequest palletRequest) {
         return palletService.updatePallet(id, palletRequest)
                 .map(ResponseEntity::ok)
@@ -51,7 +49,6 @@ public class PalletController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deletePallet(@PathVariable Long id) {
         if (palletService.deletePallet(id)) {
             return ResponseEntity.noContent().build();

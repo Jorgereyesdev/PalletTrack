@@ -11,15 +11,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class LoadRequest {
 
-    @NotNull
     private Double weight;
 
-    @NotBlank
     private String dimensions;
 
-    @NotBlank
     private String status;
 
-    @NotNull
     private Long palletId;
 }

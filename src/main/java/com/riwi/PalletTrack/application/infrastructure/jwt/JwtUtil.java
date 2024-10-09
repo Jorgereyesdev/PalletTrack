@@ -23,13 +23,23 @@ public class JwtUtil {
         return extractAllClaims(token).getSubject();
     }
 
+    // Método que extrae el email desde el "sub" del token
+    public String extractEmailFromSub(String token) {
+        String subject = extractAllClaims(token).getSubject();
+
+        // Extraer el email buscando "email=" y delimitando hasta la siguiente coma
+        String email = subject.substring(subject.indexOf("email=") + 6, subject.indexOf(",", subject.indexOf("email=")));
+
+        return email;
+    }
+
     private Claims extractAllClaims(String token) {
         return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
     }
 
-    public boolean validateToken(String token, String username) {
-        final String extractedUsername = extractUsername(token);
-        return (extractedUsername.equals(username) && !isTokenExpired(token));
+    public boolean validateToken(String token, String email) {
+        final String extractedEmail = extractEmailFromSub(token); // Extraer el email en lugar del username
+        return (extractedEmail.equals(email) && !isTokenExpired(token));
     }
 
     private boolean isTokenExpired(String token) {
